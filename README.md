@@ -1,0 +1,1 @@
+Her gunki eden ishlerinin commit edip goymaly!!!
