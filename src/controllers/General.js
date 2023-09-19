@@ -14,7 +14,7 @@ const { globSync } = require('glob')
 const fs = require('fs')
 const imageUploader = require('../scripts/utils/ImageUploader');
 const multer = require("multer");
-
+const guid = require('uuid').v4()
 
 
 
@@ -807,6 +807,40 @@ const UploadGroupsImage = async (req, res) => {
   })
 }
 
+const UploadBanner = async (req, res) => {
+  try {
+    const uploader = imageUploader('banner', 999)
+    uploader(req, res, async(err) => {
+      if (err instanceof multer.MulterError) {
+        console.log(`Multer err: `, err)
+        return res.status(status.error).send("Multer error.")
+      }
+      try {
+        const images = req.files
+        // console.log('images', req.files)
+        if(images?.length > 0){
+          const insert_banner_query = `
+            insert into tbl_images (parent_guid, image_name, image_size)values 
+            ${images?.map(item => `(
+              '${guid}', '${getImageName(item.filename)}.webp', ${item.size}
+            )`).join(', ')}
+            on conflict (image_name) do update set image_name = excluded.image_name returning image_guid, image_name
+          `
+          const response = await database.queryTransaction([{ queryText: insert_banner_query, params: [] }])
+          console.log('response', response)
+          return res.status(status.success).send('SUCCESS')
+        }
+        return res.status(status.bad).send('FAILURE')
+      } catch (error) {
+        console.log(error)
+      }
+    })
+  } catch (error) {
+    console.log(error)
+    return res.status(status.error).send('Unknown error occured.')
+  }
+}
+
 
 
 module.exports = {
@@ -825,5 +859,6 @@ module.exports = {
   GetPriceValuesByPT,
   GetGroupsWithImages,
   UploadGroupsImage,
-  GetAllImagesMaterials
+  GetAllImagesMaterials, 
+  UploadBanner
 };

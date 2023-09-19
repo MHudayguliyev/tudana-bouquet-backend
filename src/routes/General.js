@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const Authenticate = require('../scripts/helpers/Authenticate')
-const { GetFirms, GetOrdersDataForEdit, EditOrder, GetSyncData, GetAllMaterials, EditMaterial, UploadMaterialImages, GetImagesByMaterial, GetAllAttributes, GetAllImages, GetPriceTypes, GetMaterialEditData, GetPriceValuesByPT, GetGroupsWithImages, UploadGroupsImage, GetAllImagesMaterials } = require('../controllers/General')
+const { GetFirms, GetOrdersDataForEdit, EditOrder, GetSyncData, GetAllMaterials, EditMaterial, UploadMaterialImages, GetImagesByMaterial, GetAllAttributes, GetAllImages, GetPriceTypes, GetMaterialEditData, GetPriceValuesByPT, GetGroupsWithImages, UploadGroupsImage, GetAllImagesMaterials, UploadBanner } = require('../controllers/General')
 const { OrderUpdateSchema } = require('../scripts/schemas/GeneralSchema')
 const SchemaValidate = require('../scripts/utils/SchemaValidate')
 
@@ -19,19 +19,10 @@ router.route('/get-price-values-by-pt').get(Authenticate,   GetPriceValuesByPT)
 router.route('/get-groups-with-images').get(Authenticate,   GetGroupsWithImages )
 router.route('/get-all-images-materials').get(Authenticate,   GetAllImagesMaterials )
 
-
-
-
-
 router.route('/edit-order').post(Authenticate, SchemaValidate(OrderUpdateSchema), EditOrder)
 router.route('/edit-material').patch(Authenticate, EditMaterial)
 router.route('/upload-material-images').post(Authenticate, UploadMaterialImages)
 router.route('/upload-groups-image').post(Authenticate, UploadGroupsImage)
-
-
-
-
-
-
+router.route('/upload-banner').post(Authenticate, UploadBanner)
 
 module.exports = router

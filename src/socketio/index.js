@@ -32,7 +32,7 @@ sockets.init = function (server, emitEventName, emitEventData) {
       next(new Error("Authentication error"));
     }
   }).on("connection", function (socket) {
-    console.log("Socket.io connected");
+    // console.log("Socket.io connected");
 
     try {
       Subscriber.notifications.on("new_order", async (payload) => {

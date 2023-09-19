@@ -12,7 +12,6 @@ function imageUploader(imageArrayName, imageArrayCount) {
             cb(null, file.originalname)
         }
     })
-
     const fileFilter = (req, file, cb) => {
         if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png' || file.mimetype === 'image/webp' || file.mimetype === 'image/gif') {
             cb(null, true);
