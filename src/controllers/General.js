@@ -477,10 +477,10 @@ const UploadMaterialImages = async (req, res) => {
         }
 
         for await (const image of images) {
-          sharp(image.path).resize(640, 320).toFile(process.cwd() + `${ENV.IMAGE_PATH_PREFIX}/${getImageName(image.filename)}.webp`)
+          sharp(image.path).toFile(process.cwd() + `${ENV.IMAGE_PATH_PREFIX}/${getImageName(image.filename)}.webp`)
         }
         for await (const image of images) {
-          sharp(image.path).resize(640, 880).toFile(process.cwd() + `${ENV.GROUPS_IMAGE_PATH_PREFIX}/${getImageName(image.filename)}.webp`)
+          sharp(image.path).toFile(process.cwd() + `${ENV.GROUPS_IMAGE_PATH_PREFIX}/${getImageName(image.filename)}.webp`)
         }
 
         const queryText = `
@@ -808,6 +808,9 @@ const UploadGroupsImage = async (req, res) => {
 }
 
 const UploadBanner = async (req, res) => {
+    // NOTE: banner images are written only on original folder
+    // we dont really convert it to wepb format
+
   try {
     const uploader = imageUploader('banner', 999)
     uploader(req, res, async(err) => {
@@ -817,7 +820,6 @@ const UploadBanner = async (req, res) => {
       }
       try {
         const images = req.files
-        // console.log('images', req.files)
         if(images?.length > 0){
           const insert_banner_query = `
             insert into tbl_images (parent_guid, image_name, image_size)values 
@@ -826,6 +828,11 @@ const UploadBanner = async (req, res) => {
             )`).join(', ')}
             on conflict (image_name) do update set image_name = excluded.image_name returning image_guid, image_name
           `
+
+          for(let image of images){
+            sharp(image?.path).toFile(process.cwd() + `${ENV.IMAGE_PATH_PREFIX}/${getImageName(image?.filename)}.webp`)
+          }
+
           const response = await database.queryTransaction([{ queryText: insert_banner_query, params: [] }])
           console.log('response', response)
           return res.status(status.success).send('SUCCESS')
